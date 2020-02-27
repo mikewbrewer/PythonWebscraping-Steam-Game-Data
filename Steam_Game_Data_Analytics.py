@@ -1,5 +1,6 @@
 import gspread
 import pandas
+import re
 
 from datetime import date
 from oauth2client.service_account import ServiceAccountCredentials
@@ -12,7 +13,7 @@ def addDataToSheets():
         "https://www.googleapis.com/auth/drive"]
 
     # connect to google sheets
-    creds = ServiceAccountCredentials.from_json_keyfile_name("Steam_Game_Data_Credentials.json", scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_name("Google_Credentials.json", scope)
     client = gspread.authorize(creds)
 
     filename = "Steam_Game_Analytics_Data"
@@ -43,9 +44,11 @@ def addDataToSheets():
             if (row['Price'] == 'Free'):
                 temp = 0
             else:
-                temp = row['Price']
+                temp = str(row['Price'])
                 temp = temp[1:]
-            temp_total = temp_total + float(temp)
+
+            if (re.search("[0-9]$", temp)):
+                temp_total = temp_total + float(temp)
 
         price_averages.append(temp_total / 100)
 
